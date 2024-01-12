@@ -16,7 +16,7 @@ X_plot = np.linspace(0, 80, 100)[:, np.newaxis]
 bandwidth = 2
 
 
-sdss_file = '../sdss_all_info.p'
+sdss_file = '../sdss_all_info_w_smoothened.p'
 all_info = pickle.load(open(sdss_file, 'rb'))
 
 all_sdss_minn = []
@@ -29,12 +29,11 @@ for sample in ['sample0', 'sample1', 'sample2']:
     if sample != 'sample1':
         continue
 
-    sdss_data = all_info['original_undersamples']['percent1'][sample]['cycs']
+    sdss_data = all_info['original_undersamples']['percent1'][sample]['smoothened_minimal']
     
     sdss_reff = []
     
-    for cyc in sdss_data:
-        this_boundary = sdss_data[cyc]['minimal_cycs'][0][0]
+    for this_boundary in sdss_data:
         this_reff = hf.get_reff_convexhull(this_boundary)
         #this_reff = hf.get_reff_delaunay(this_boundary)
         sdss_reff.append(this_reff)
@@ -54,7 +53,7 @@ for sample in ['sample0', 'sample1', 'sample2']:
 #plt.show()
 #exit()
 
-mocks_file = '../mocks_all_info.p'
+mocks_file = '../mocks_all_info_w_smoothened.p'
 
 mocks_data = pickle.load(open(mocks_file, 'rb'))
 
@@ -89,9 +88,9 @@ for mock in tqdm(mocks_data):
             flag = 0
     if flag:
         mock_reff = []
-        for cyc in cycs:
+        for this_boundary in mocks_data[mock]['smoothened_minimal']:
             # convert to h^-1 Mpc
-            this_boundary = mocks_data[mock]['cycs'][cyc]['minimal_cycs'][0]*mocks_scale
+            this_boundary = this_boundary*mocks_scale
             this_reff = hf.get_reff_convexhull(this_boundary)
             mock_reff.append(this_reff)
 
@@ -139,8 +138,8 @@ legend_elements = [Line2D([0], [0], color='r', lw=2, label='SDSS') ]
 plt.legend(handles=old_handles + legend_elements)
 
 
-plt.xlabel(r'$R_{\rm eff}$ ($h^{-1}$ Mpc)', fontsize=16)
-plt.ylabel('Density', fontsize=16)
+plt.xlabel(r'$R_{\rm eff}$ ($h^{-1}$ Mpc)', fontsize=18)
+plt.ylabel('Density', fontsize=18)
 
     
 plt.savefig('figures/SDSS_mocks_Reff.jpg', dpi=600)
@@ -153,15 +152,15 @@ plt.scatter([0]*len(all_mocks_minn), all_mocks_minn, alpha=0.4, color='turquoise
 plt.scatter([1]*len(all_mocks_med), all_mocks_med, alpha=0.4, color='turquoise')
 plt.scatter([2]*len(all_mocks_maxx), all_mocks_maxx, alpha=0.4, color='turquoise')
 
-#plt.scatter([0]*len(all_sdss_minn), all_sdss_minn, color='red', alpha=0.6)
+plt.scatter([0]*len(all_sdss_minn), all_sdss_minn, color='red', alpha=0.6)
 plt.scatter([1]*len(all_sdss_med), all_sdss_med, color='red', alpha=0.6)
-#plt.scatter([2]*len(all_sdss_maxx), all_sdss_maxx, color='red', alpha=0.6)
+plt.scatter([2]*len(all_sdss_maxx), all_sdss_maxx, color='red', alpha=0.6)
 
-plt.ylabel(r'$R_{\rm eff}$ ($h^{-1}$ Mpc)', fontsize=16)
+plt.ylabel(r'$R_{\rm eff}$ ($h^{-1}$ Mpc)', fontsize=18)
 
 plt.xlim([-0.75, 2.75])
 
-plt.xticks([0, 1, 2], ['min', 'median', 'max'], fontsize=16)
+plt.xticks([0, 1, 2], ['min', 'median', 'max'], fontsize=18)
 
 
 plt.savefig('figures/SDSS_mocks_reff_minmaxmed.jpg', dpi=600)

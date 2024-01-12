@@ -10,20 +10,21 @@ from sklearn.neighbors import KernelDensity
 X_plot = np.linspace(0, 150, 150)[:, np.newaxis]
 bandwidth = 2
 
-sdss_file = '../sdss_all_info.p'
+sdss_file = '../sdss_all_info_w_smoothened.p'
 sdss_info = pickle.load(open(sdss_file, 'rb'))
 
 sdss_samples_kde = []
 
 
 for sample in ['sample0', 'sample1', 'sample2']:
-    sdss_data = sdss_info['original_undersamples']['percent1'][sample]['cycs']
+
+    sdss_data = sdss_info['original_undersamples']['percent1'][sample]['smoothened_minimal']
+
     locs = sdss_info['original_undersamples']['percent1'][sample]['locs']
 
     boundaries = []
     
-    for cyc in tqdm(sdss_data):
-        this_boundary = sdss_data[cyc]['minimal_cycs'][0][0]
+    for this_boundary in tqdm(sdss_data):
         boundaries.append(this_boundary)
     
     dists = hf.get_nearest_void_center_distances(boundaries)
@@ -59,7 +60,7 @@ plt.clf()
 plt.plot(X_plot, sdss_samples_kde[1], color='r', alpha=0.6, zorder=4000)
 
 
-mocks_file = '../mocks_all_info.p'
+mocks_file = '../mocks_all_info_w_smoothened.p'
 
 mocks_data = pickle.load(open(mocks_file, 'rb'))
 
@@ -72,13 +73,12 @@ all_mocks_kde = []
 
 for mock in tqdm(mocks_data):
 
-    cycs = mocks_data[mock]['cycs']
 
     boundaries = []
 
-    for cyc in cycs:
+    for this_boundary in mocks_data[mock]['smoothened_minimal']:
         # convert to h^-1 Mpc
-        this_boundary = mocks_data[mock]['cycs'][cyc]['minimal_cycs'][0]*mocks_scale
+        this_boundary = this_boundary*mocks_scale
         boundaries.append(this_boundary)
 
     dists = hf.get_nearest_void_center_distances(boundaries)
@@ -120,6 +120,7 @@ plt.legend(handles=old_handles + legend_elements)
 plt.xlabel(r'distance to nearest void center ($h^{-1}$ Mpc)', fontsize=14)
 plt.ylabel('Density', fontsize=16)
 
+plt.tight_layout()
 plt.savefig('figures/SDSS_mocks_void_centers_kde.jpg', dpi=600)
 
 

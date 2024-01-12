@@ -62,7 +62,8 @@ plt.legend(handles=legend_elements)
 plt.xlabel(r'$r$ ($h^{-1}$ Mpc)', fontsize=16)
 plt.ylabel(r'$g(r)$', fontsize=16)
 
-plt.savefig('figures/SDSS_mocks_gor_medians.jpg', dpi=600)
+plt.tight_layout()
 
+plt.savefig('figures/SDSS_mocks_gor_medians.jpg', dpi=600)
 
 
